@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>GRE 333 Mastery</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <h1>GRE 333 Mastery</h1>
+        <span class="badge" id="offline-status">Offline Ready</span>
+      </div>
+      <button id="theme-toggle" class="icon-btn" aria-label="Toggle Theme">🌙</button>
+    </header>
+
+    <!-- Main Content Containers -->
+    <main class="main-content">
+      <!-- 1. DRAWERS VIEW -->
+      <section id="view-drawers" class="view active">
+        <div class="search-box-wrapper">
+          <input type="text" id="word-search" placeholder="Search 333 words (English or Bangla)..." aria-label="Search words">
+        </div>
+        <div id="search-results" class="search-results-list hidden"></div>
+        <div class="drawers-header">
+          <h2>Study Drills</h2>
+          <span id="drill-count-badge">Drills</span>
+        </div>
+        <div id="drawers-container" class="grid-drawers"></div>
+      </section>
+
+      <!-- 2. FLASHCARD VIEW -->
+      <section id="view-flashcard" class="view">
+        <div class="flashcard-top-bar">
+          <button class="btn-secondary" id="btn-back-drawers">← Back</button>
+          <span id="card-counter">1 / 25</span>
+          <button class="icon-btn" id="btn-shuffle" title="Shuffle Card Deck">🔀</button>
+        </div>
+
+        <div class="card-container" id="card-container">
+          <div class="flashcard" id="flashcard">
+            <!-- Front -->
+            <div class="card-face card-front">
+              <div class="card-header-actions">
+                <button class="icon-btn star-btn" id="star-btn">★</button>
+              </div>
+              <h2 class="word-title" id="front-word">Word</h2>
+              <button class="audio-btn" id="speak-btn">🔊 Listen</button>
+              <p class="tap-hint">Tap card or press Space to flip</p>
+            </div>
+            <!-- Back -->
+            <div class="card-face card-back">
+              <span class="pos-tag" id="back-pos">part of speech</span>
+              <h3 class="meaning-eng" id="back-meaning-eng">English Meaning</h3>
+              <p class="meaning-bng" id="back-meaning-bng">বাংলা অর্থ</p>
+              
+              <div class="syn-ant-block">
+                <p><strong>Synonyms:</strong> <span id="back-synonyms"></span></p>
+                <p><strong>Antonyms:</strong> <span id="back-antonyms"></span></p>
+              </div>
+
+              <blockquote class="example-box" id="back-example">Example sentence...</blockquote>
+              <p class="etymology-text"><strong>Etymology:</strong> <span id="back-etymology"></span></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rating Buttons -->
+        <div class="flashcard-actions">
+          <button class="action-btn again-btn" id="btn-again">Study Again (1)</button>
+          <button class="action-btn gotit-btn" id="btn-gotit">Got It! (2)</button>
+        </div>
+      </section>
+
+      <!-- 3. REVIEW VIEW -->
+      <section id="view-review" class="view">
+        <div class="section-title">
+          <h2>Spaced Review Queue</h2>
+          <p class="subtitle">Words marked "Study Again" or missed in Quizzes come back here.</p>
+        </div>
+        <div id="review-empty" class="empty-state">
+          🎉 Review queue is clear! All words mastered or not flagged yet.
+        </div>
+        <div id="review-content" class="hidden">
+          <button class="btn-primary full-width" id="start-review-btn">Start Reviewing Queue</button>
+          <div id="review-words-list" class="words-list-preview"></div>
+        </div>
+      </section>
+
+      <!-- 4. BOOKMARKS VIEW -->
+      <section id="view-bookmarks" class="view">
+        <div class="section-title">
+          <h2>Starred Words</h2>
+        </div>
+        <div id="bookmarks-empty" class="empty-state">
+          ⭐ No bookmarks yet. Tap the star icon on any flashcard to save words here!
+        </div>
+        <div id="bookmarks-list" class="grid-cards"></div>
+      </section>
+
+      <!-- 5. QUIZ VIEW -->
+      <section id="view-quiz" class="view">
+        <div class="section-title">
+          <h2>Practice Quiz</h2>
+        </div>
+        <div id="quiz-setup-card" class="settings-card">
+          <label><strong>Word Pool:</strong>
+            <select id="quiz-pool">
+              <option value="all">All Words (333)</option>
+              <option value="bookmarks">Starred Bookmarks</option>
+              <option value="mistakes">Review / Mistakes Queue</option>
+            </select>
+          </label>
+          <label><strong>Quiz Length:</strong>
+            <select id="quiz-length">
+              <option value="5">5 Questions</option>
+              <option value="10" selected>10 Questions</option>
+              <option value="20">20 Questions</option>
+            </select>
+          </label>
+          <button class="btn-primary full-width" id="btn-start-quiz">Start Quiz</button>
+        </div>
+
+        <div id="quiz-active-box" class="quiz-box hidden">
+          <div class="quiz-header">
+            <span id="quiz-progress-text">Question 1 of 10</span>
+            <span id="quiz-score-live">Score: 0</span>
+          </div>
+          <div class="quiz-question" id="quiz-question-text">Question text goes here</div>
+          <div class="quiz-options" id="quiz-options-container"></div>
+        </div>
+
+        <div id="quiz-results-box" class="quiz-results hidden">
+          <h3>Quiz Complete! 🎉</h3>
+          <p class="score-display">Your Score: <span id="quiz-final-score">0/10</span></p>
+          <p id="quiz-feedback-msg"></p>
+          <div class="quiz-results-actions">
+            <button class="btn-secondary" id="btn-retake-missed">Retake Missed Words</button>
+            <button class="btn-primary" id="btn-new-quiz">New Quiz</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. BROWSE ALL WORDS VIEW -->
+      <section id="view-browse" class="view">
+        <div class="browse-header">
+          <h2>Browse Words</h2>
+          <div class="layout-toggles">
+            <button class="layout-btn active" data-layout="card">Card</button>
+            <button class="layout-btn" data-layout="grid">Grid</button>
+            <button class="layout-btn" data-layout="list">List</button>
+          </div>
+        </div>
+        <div id="browse-container" class="browse-container layout-card"></div>
+      </section>
+
+      <!-- 7. PROGRESS VIEW -->
+      <section id="view-progress" class="view">
+        <div class="section-title">
+          <h2>Your Progress</h2>
+        </div>
+        <div class="stats-overview">
+          <div class="stat-box">
+            <span class="stat-num" id="stat-gotit">0</span>
+            <span class="stat-label">Got It</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num" id="stat-again">0</span>
+            <span class="stat-label">Study Again</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num" id="stat-unseen">333</span>
+            <span class="stat-label">Unseen</span>
+          </div>
+        </div>
+
+        <div class="mastery-bar-wrapper">
+          <h4>Overall Mastery Breakdown</h4>
+          <div class="progress-bar-stacked">
+            <div id="bar-gotit" class="bar-part bar-gotit" style="width: 0%"></div>
+            <div id="bar-again" class="bar-part bar-again" style="width: 0%"></div>
+            <div id="bar-unseen" class="bar-part bar-unseen" style="width: 100%"></div>
+          </div>
+        </div>
+
+        <div class="streak-card">
+          <h3>🔥 <span id="streak-count">0</span> Day Study Streak</h3>
+          <p>Keep studying daily to keep your momentum going!</p>
+          <div id="weekly-calendar" class="weekly-calendar"></div>
+        </div>
+      </section>
+
+      <!-- 8. SETTINGS VIEW -->
+      <section id="view-settings" class="view">
+        <div class="section-title">
+          <h2>Settings</h2>
+        </div>
+        <div class="settings-card">
+          <label><strong>Words Per Drill:</strong>
+            <input type="number" id="setting-drill-size" min="10" max="50" value="25">
+          </label>
+          <label><strong>Pronunciation Speed:</strong>
+            <input type="range" id="setting-voice-speed" min="0.5" max="1.5" step="0.1" value="1.0">
+            <span id="speed-val">1.0x</span>
+          </label>
+          <hr>
+          <h4>Data Management</h4>
+          <div class="button-group">
+            <button class="btn-secondary" id="btn-export">Export Backup (JSON)</button>
+            <label class="btn-secondary file-upload-btn">
+              Import Backup
+              <input type="file" id="import-file" accept=".json" style="display:none;">
+            </label>
+          </div>
+          <button class="btn-danger full-width" id="btn-reset-data">Reset All Learning Progress</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-target="view-drawers">
+        <span class="nav-icon">🗂️</span>
+        <span class="nav-label">Drawers</span>
+      </button>
+      <button class="nav-item" data-target="view-browse">
+        <span class="nav-icon">📖</span>
+        <span class="nav-label">Browse</span>
+      </button>
+      <button class="nav-item" data-target="view-review">
+        <span class="nav-icon">🔄</span>
+        <span class="nav-label">Review</span>
+      </button>
+      <button class="nav-item" data-target="view-quiz">
+        <span class="nav-icon">📝</span>
+        <span class="nav-label">Quiz</span>
+      </button>
+      <button class="nav-item" data-target="view-bookmarks">
+        <span class="nav-icon">⭐</span>
+        <span class="nav-label">Saved</span>
+      </button>
+      <button class="nav-item" data-target="view-progress">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Progress</span>
+      </button>
+      <button class="nav-item" data-target="view-settings">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Settings</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="words.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

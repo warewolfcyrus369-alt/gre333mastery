@@ -1,0 +1,20 @@
+{
+  "name": "GRE 333 Mastery",
+  "short_name": "GRE 333",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192.png?text=GRE+333",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512.png?text=GRE+333",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
